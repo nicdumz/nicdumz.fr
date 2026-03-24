@@ -12,4 +12,3 @@ css/*.css
 .direnv/
 node/
 node_modules/
-package.json
