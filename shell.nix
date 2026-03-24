@@ -16,6 +16,8 @@ devshell.mkShell {
     gems
     (pkgs.lib.lowPrio gems.wrappedRuby)
     pkgs.bundix
+    pkgs.nodejs
+    pkgs.pnpm
     # (pkgs.ruby.withPackages (ps: with ps; [ bundix ]))
   ];
   commands = [
@@ -24,6 +26,7 @@ devshell.mkShell {
       help = "Serve a local version of the website";
       command = ''
         bundle install
+        pnpm install
         bundle exec jekyll serve --livereload
       '';
     }

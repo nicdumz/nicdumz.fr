@@ -1,6 +1,16 @@
 # Jekyll config
 sass:
   style: compact # possible values: nested expanded compact compressed
+  load_paths:
+    - node_modules
+exclude:
+  - "*.nix"
+  - "*.json"
+  - "*.yaml"
+  - LICENSE.txt
+  - node
+  - "**README.md"
+  
 permalink: /blog/:year/:month/:title
 timezone: Europe/Zurich
 defaults:
