@@ -52,6 +52,7 @@ module.exports = function(eleventyConfig) {
 
   // Ignore README files
   eleventyConfig.ignores.add("**/README.md");
+  eleventyConfig.ignores.add("AGENTS.md");
 
   return {
     dir: {
