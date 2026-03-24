@@ -3,8 +3,9 @@ layout: blog
 title: Blog
 ---
 
-{% for post in site.posts %}
-  {% include post.html post=post %}
+{% for post in collections.posts %}
+  {% assign currentPost = post %}
+  {% include "post.html" %}
 {% endfor %}
 
 <!-- Could potentially enable https://jekyllrb.com/docs/pagination/ later

@@ -1,22 +1,22 @@
 <article>
   <div class="blog_post content box" style="border-radius: 12px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
     <header>
-      <div id="{{ include.post.id | replace: "/" "-" }}"></div>
+      <div id="{{ currentPost.url | replace: '/', '-' }}"></div>
       <h2 class="blog_post_title is-size-2-tablet is-size-4-mobile">
-        <a href="{{ include.post.url }}" rel="bookmark" title="{{ include.post.title }}">
-          {{ include.post.title }}
+        <a href="{{ currentPost.url }}" rel="bookmark" title="{{ currentPost.data.title }}">
+          {{ currentPost.data.title }}
         </a>
       </h2>
       <p class="mb-5 has-text-grey-light">
         <small class="is-flex is-align-items-center">
           <span class="icon is-small mr-1"><i data-lucide="calendar"></i></span>
-          <span class="is-italic">{{ include.post.date | date: "%B %d, %Y" }}</span> 
+          <span class="is-italic">{{ currentPost.date | date: "%B %d, %Y" }}</span>
         </small>
       </p>
     </header>
-    
+
     <div class="post_prose is-size-5-desktop">
-      {{ include.post.content }}
+      {{ currentPost.templateContent }}
     </div>
   </div>
 </article>

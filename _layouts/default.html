@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge"><!-- lol IE -->
-    <title>{%- if page.title == empty -%}Nicolas Dumazet{%- else -%}Nicolas Dumazet - {{ page.title }}{%- endif -%}</title>
+    <title>Nicolas Dumazet{% if title %} - {{ title }}{% endif %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Nicolas Dumazet">
 
@@ -21,7 +21,10 @@
     <meta name="twitter:card" content="summary_large_image">
 
     <link rel="stylesheet" href="/assets/css/bulma.css" type="text/css" />
-    <link rel="stylesheet" href="/assets/css/rouge-molokai-syntax.css" type="text/css" />
+    <link
+			href="https://unpkg.com/prismjs@1.20.0/themes/prism-tomorrow.css"
+			rel="stylesheet"
+		/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -33,7 +36,7 @@
         lucide.createIcons();
       });
     </script>
-    {%- if jekyll.environment == 'production' -%}
+    {% if environment == 'production' %}
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-80FHY0HJBL"></script>
     <script>
@@ -43,7 +46,7 @@
 
       gtag('config', 'G-80FHY0HJBL');
     </script>
-    {%- endif -%}
+    {% endif %}
   </head>
   <body>
     <!-- lol IE (2) -->

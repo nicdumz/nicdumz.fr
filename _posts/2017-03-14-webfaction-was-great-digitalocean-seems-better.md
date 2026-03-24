@@ -1,6 +1,5 @@
 ---
 tags: website tech webhost webfaction digitalocean
-date: 14/03/2017 23:00
 title: Webfaction was great, Digital Ocean seems better
 ---
 # Webfaction

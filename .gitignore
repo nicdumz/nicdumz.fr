@@ -7,8 +7,7 @@ _*env*/
 .sass-cache/
 css/*.css
 *.egg-info/
-.jekyll-cache/
-.jekyll-metadata
+.eleventy-cache/
 .direnv/
 node/
 node_modules/

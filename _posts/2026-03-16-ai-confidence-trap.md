@@ -1,5 +1,4 @@
 ---
-date: 16/03/2026 11:00
 title: "AI: The confidence trap"
 tags: ai
 ---

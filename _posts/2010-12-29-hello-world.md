@@ -1,17 +1,16 @@
 ---
 categories: Python
-date: 29/12/2010 23:15
 title: "Hello world!"
 ---
 [_All I wanted for Christmas was a blog._](https://twitter.com/#!/nicdumz/status/16359797884461056)
 
-{% highlight python %}
+```python
 def test():
   print "Hello, world!"
   return 42
 
 test()
-{% endhighlight %}
+```
 
 So here we are, a simple static blog, with a fairly simple skin derived from
 the default Blogofile blog. Untested under IE: if you encounter some troubles,

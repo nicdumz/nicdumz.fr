@@ -3,13 +3,13 @@
     Latest Musings
   </p>
   <ul class="menu-list" id="latest-posts">
-    {% for post in site.posts limit:5 %}
+    {% for post in collections.posts | limit: 5 %}
     <li>
       <a href="{{ post.url }}" class="is-flex is-align-items-center">
         <span class="icon is-small mr-2 has-text-link">
           <i data-lucide="file-text"></i>
         </span>
-        <span class="is-size-6">{{ post.title }}</span>
+        <span class="is-size-6">{{ post.data.title }}</span>
       </a>
     </li>
     {% endfor %}
