@@ -1,0 +1,168 @@
+name: Validate Site Output
+
+on:
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          cache: true
+          version: 10
+
+      # Build base branch (main)
+      - name: Checkout base branch
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.base_ref }}
+          path: base
+
+      - name: Install dependencies (base)
+        working-directory: base
+        run: pnpm install --frozen-lockfile
+
+      - name: Build site (base)
+        working-directory: base
+        run: ELEVENTY_ENV=production pnpm exec eleventy
+
+      # Build PR branch
+      - name: Checkout PR branch
+        uses: actions/checkout@v6
+        with:
+          path: pr
+
+      - name: Install dependencies (PR)
+        working-directory: pr
+        run: pnpm install --frozen-lockfile
+
+      - name: Build site (PR)
+        working-directory: pr
+        run: ELEVENTY_ENV=production pnpm exec eleventy
+
+      # Compare outputs using git diff --no-index
+      - name: Compare site outputs
+        id: compare
+        run: |
+          BASE_COUNT=$(find base/_site -type f | wc -l)
+          PR_COUNT=$(find pr/_site -type f | wc -l)
+
+          echo "Base output: $BASE_COUNT files"
+          echo "PR output: $PR_COUNT files"
+          echo "base_count=$BASE_COUNT" >> $GITHUB_OUTPUT
+          echo "pr_count=$PR_COUNT" >> $GITHUB_OUTPUT
+
+          # Use git diff --no-index to compare directories
+          if git diff --no-index --stat base/_site pr/_site > diff-stat.txt 2>&1; then
+            echo "differences_found=false" >> $GITHUB_OUTPUT
+            echo "✅ No differences found"
+          else
+            echo "differences_found=true" >> $GITHUB_OUTPUT
+            echo "⚠️ Differences detected"
+
+            # Capture full diff for reporting (limit size)
+            git diff --no-index base/_site pr/_site > diff-full.txt 2>&1 || true
+          fi
+
+      - name: Generate summary
+        run: |
+          if [ "${{ steps.compare.outputs.differences_found }}" = "false" ]; then
+            cat > summary.md << EOF
+          ## ✅ Site Output Identical
+
+          No differences detected between base and PR site outputs.
+
+          **File count**: ${{ steps.compare.outputs.base_count }} files
+          **Status**: Safe to merge
+
+          ---
+          *Automated validation for dependency updates*
+          EOF
+          else
+            cat > summary.md << 'EOF'
+          ## ⚠️ Site Output Differences Detected
+
+          Changes in site output were found:
+
+          ### Summary
+          ```
+          EOF
+            cat diff-stat.txt >> summary.md 2>/dev/null || echo "Unable to generate stat" >> summary.md
+            cat >> summary.md << 'EOF'
+          ```
+
+          ### Detailed Diff
+          <details>
+          <summary>Click to expand</summary>
+
+          ```diff
+          EOF
+            head -n 200 diff-full.txt >> summary.md 2>/dev/null || echo "No detailed diff available" >> summary.md
+            LINES=$(wc -l < diff-full.txt 2>/dev/null || echo 0)
+            if [ "$LINES" -gt 200 ]; then
+              echo "..." >> summary.md
+              echo "(Diff truncated - $LINES total lines)" >> summary.md
+            fi
+            cat >> summary.md << 'EOF'
+          ```
+          </details>
+
+          **Status**: ❌ Review changes before merging
+
+          ---
+          *Automated validation for dependency updates*
+          EOF
+          fi
+
+      - name: Post PR comment
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('summary.md', 'utf8');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('Site Output')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: summary
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: summary
+              });
+            }
+
+      - name: Check validation result
+        if: steps.compare.outputs.differences_found == 'true'
+        run: |
+          echo "::error::Site output validation failed - differences detected"
+          exit 1
