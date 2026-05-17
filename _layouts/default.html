@@ -17,8 +17,12 @@
     <meta property="og:description" content="{{ og_desc }}">
 
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    {% assign url_prefix = page.url | slice: 0, 5 %}{% if url_prefix == "/blog" %}
+    <link rel="alternate" type="application/rss+xml" title="Blog RSS" href="/blog/feed.rss">
+    {% endif %}
     <meta property="og:image" content="https://www.nicdumz.fr/assets/images/content/social-preview.png">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="generator" content="{{ eleventy.generator }}">
 
     <link rel="stylesheet" href="/assets/css/bulma.css" type="text/css" />
     <link
