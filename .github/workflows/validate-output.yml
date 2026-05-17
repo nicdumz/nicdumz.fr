@@ -76,7 +76,7 @@ jobs:
             git diff --no-index base/_site pr/_site > diff-full.txt 2>&1 || true
           fi
 
-      - name: Generate summary
+      - name: Generate diff and summary
         run: |
           if [ "${{ steps.compare.outputs.differences_found }}" = "false" ]; then
             cat > summary.md << EOF
@@ -102,8 +102,9 @@ jobs:
             cat diff-stat.txt >> summary.md 2>/dev/null || echo "Unable to generate stat" >> summary.md
             cat >> summary.md << 'EOF'
           ```
+          A truncated preview of the changes is below. You can view the **[un-truncated full diff here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
 
-          ### Detailed Diff
+          ### Truncated Diff
           <details>
           <summary>Click to expand</summary>
 
@@ -119,14 +120,28 @@ jobs:
           ```
           </details>
 
-          **Status**: ❌ Review changes before merging
+          **Status**: ❌ Review changes before merging. Apply `diff-approved` label if diffs look good to you.
 
           ---
           *Automated validation for dependency updates*
           EOF
+
+            # Write the UN-TRUNCATED full diff to the GitHub Job Summary page
+            cat >> $GITHUB_STEP_SUMMARY << 'EOF'
+          ## 📝 Full Site Output Diff
+          <details open>
+          <summary>Click to collapse full diff</summary>
+
+          ```diff
+          EOF
+            cat diff-full.txt >> $GITHUB_STEP_SUMMARY
+            cat >> $GITHUB_STEP_SUMMARY << 'EOF'
+          ```
+          </details>
+          EOF
           fi
 
-      - name: Post PR comment
+      - name: Post or Update PR comment
         if: always()
         uses: actions/github-script@v9
         with:
@@ -160,14 +175,6 @@ jobs:
                 body: summary
               });
             }
-      - name: Upload Full Diff Artifact
-        if: steps.compare.outputs.differences_found == 'true'
-        uses: actions/upload-artifact@v7
-        with:
-          name: site-output-diff
-          path: |
-            diff-full.txt
-          retention-days: 7
       - name: Check validation result
         if: |
           steps.compare.outputs.differences_found == 'true' && 
