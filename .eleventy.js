@@ -51,9 +51,13 @@ export default function (eleventyConfig) {
   });
 
   // Passthrough copy for assets
-  eleventyConfig.addPassthroughCopy("assets/images");
+  eleventyConfig.addPassthroughCopy("assets/images/**/*.gif");
+  eleventyConfig.addPassthroughCopy("assets/images/**/*.jpg");
+  eleventyConfig.addPassthroughCopy("assets/images/**/*.png");
   eleventyConfig.addPassthroughCopy("assets/favicon.svg");
   eleventyConfig.addPassthroughCopy("resume-dumazet.pdf");
+  // For CloudFlare pages headers, see https://developers.cloudflare.com/pages/configuration/headers/
+  eleventyConfig.addPassthroughCopy("_headers");
 
   // Collections - blog posts sorted by date (newest first)
   eleventyConfig.addCollection("posts", function (collectionApi) {
