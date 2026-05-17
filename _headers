@@ -1,0 +1,3 @@
+# See https://developers.cloudflare.com/pages/configuration/headers/
+/blog/feed.rss
+  Content-Type: application/rss+xml
