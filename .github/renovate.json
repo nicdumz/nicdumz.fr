@@ -3,6 +3,7 @@
   "extends": [
     "config:recommended"
   ],
+  "osvVulnerabilityAlerts": true,
   "packageRules": [
     {
       "matchManagers": ["github-actions"],
