@@ -1,11 +1,12 @@
-const eleventyPluginSyntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
-const eleventySass = require("eleventy-sass");
-const markdownIt = require("markdown-it");
-const markdownItAnchor = require("markdown-it-anchor");
+import syntaxHighlight from "@11ty/eleventy-plugin-syntaxhighlight";
+import { feedPlugin } from "@11ty/eleventy-plugin-rss";
+import eleventySass from "eleventy-sass";
+import markdownit from "markdown-it";
+import markdownItAnchor from "markdown-it-anchor";
 
-module.exports = function(eleventyConfig) {
+export default function (eleventyConfig) {
   // Configure markdown-it with anchor plugin for heading IDs
-  const markdownLib = markdownIt({
+  const markdownLib = markdownit({
     html: true,
     linkify: true,
     typographer: true
@@ -23,11 +24,29 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.setLibrary("md", markdownLib);
 
   // Plugins
-  eleventyConfig.addPlugin(eleventyPluginSyntaxHighlight);
+  eleventyConfig.addPlugin(syntaxHighlight);
   eleventyConfig.addPlugin(eleventySass, {
     sass: {
       loadPaths: ["node_modules"],
       style: "compressed"
+    }
+  });
+  eleventyConfig.addPlugin(feedPlugin, {
+    type: "rss",
+    outputPath: "/blog/feed.rss",
+    collection: {
+      name: "posts",
+      limit: 10,
+    },
+    metadata: {
+      language: "en",
+      title: "ndumazet@ - Blog",
+      subtitle: "Ramblings from Nicolas",
+      base: "https://nicdumz.fr/blog/",
+      author: {
+        name: "Nicolas Dumazet",
+        email: "",
+      }
     }
   });
 
@@ -37,7 +56,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("resume-dumazet.pdf");
 
   // Collections - blog posts sorted by date (newest first)
-  eleventyConfig.addCollection("posts", function(collectionApi) {
+  eleventyConfig.addCollection("posts", function (collectionApi) {
     return collectionApi.getFilteredByGlob("_posts/*.md")
       .sort((a, b) => b.date - a.date);
   });
@@ -61,7 +80,7 @@ module.exports = function(eleventyConfig) {
       includes: "_includes",
       layouts: "_layouts"
     },
-    templateFormats: ["html", "md", "liquid"],
+    templateFormats: ["html", "md", "liquid", "njk"],
     htmlTemplateEngine: "liquid",
     markdownTemplateEngine: "liquid"
   };
