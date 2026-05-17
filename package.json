@@ -4,7 +4,8 @@
 		"@11ty/eleventy-plugin-syntaxhighlight": "^5.0.0",
 		"bulma": "^1.0.4",
 		"eleventy-sass": "^3.0.0-beta.0",
-		"markdown-it-anchor": "^9.2.0"
+		"markdown-it-anchor": "^9.2.0",
+		"wrangler": "^4.92.0"
 	},
 	"scripts": {
 		"build": "eleventy",
