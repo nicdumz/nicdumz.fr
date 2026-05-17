@@ -3,6 +3,7 @@ name: Validate Site Output
 on:
   pull_request:
     branches: ["main"]
+    types: [opened, synchronize, reopened, labeled]
 
 permissions:
   contents: read
@@ -159,9 +160,19 @@ jobs:
                 body: summary
               });
             }
-
-      - name: Check validation result
+      - name: Upload Full Diff Artifact
         if: steps.compare.outputs.differences_found == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-output-diff
+          path: |
+            diff-full.txt
+          retention-days: 7
+      - name: Check validation result
+        if: |
+          steps.compare.outputs.differences_found == 'true' && 
+          !contains(github.event.pull_request.labels.*.name, 'diff-approved')
         run: |
           echo "::error::Site output validation failed - differences detected"
+          echo "::notice::If these changes are expected, add the 'diff-approved' label to this PR and rerun the check."
           exit 1
