@@ -4,6 +4,7 @@
     "config:recommended"
   ],
   "osvVulnerabilityAlerts": true,
+  "lockFileMaintenance": { "enabled": true },
   "packageRules": [
     {
       "matchManagers": ["github-actions"],
