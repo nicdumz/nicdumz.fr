@@ -123,7 +123,7 @@ jobs:
           **Status**: ❌ Review changes before merging. Apply `diff-approved` label if diffs look good to you.
 
           ---
-          *Automated validation for dependency updates*
+          *Automated diffing of generated site outputs.*
           EOF
 
             # Write the UN-TRUNCATED full diff to the GitHub Job Summary page
